@@ -1,5 +1,5 @@
 """
-based on https://github.com/myleott/mnist_png
+Based on https://github.com/myleott/mnist_png
 """
 import os
 import struct
