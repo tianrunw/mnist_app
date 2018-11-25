@@ -1,2 +1,4 @@
-Flask
-Redis
+flask
+numpy
+tensorflow
+pillow

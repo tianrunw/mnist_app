@@ -1,9 +1,7 @@
 import os
 import numpy as np
-import pandas as pd
 import tensorflow as tf
 from tensorflow import keras
-import matplotlib.pyplot as plt
 
 
 
@@ -84,14 +82,6 @@ class _image_classifier (object):
         assert(os.path.exists(self.model_path))
         self.model = keras.models.load_model(self.model_path)
         self._compile()
-
-
-    def plot (self, image):
-        plt.figure()
-        plt.imshow(image)
-        plt.colorbar()
-        plt.grid(False)
-        plt.show()
 
 
 
