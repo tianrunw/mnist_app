@@ -22,7 +22,7 @@ def decode_review (text):
     return ' '.join([reverse_word_index.get(i, '?') for i in text])
 
 
-def encode_review (text):
+def encode_review (text, vocab=100000):
     table = str.maketrans({key: None for key in string.punctuation})
     text = text.lower().translate(table)
     words = text.split(' ')
@@ -31,12 +31,16 @@ def encode_review (text):
         if len(word) == 0:
             return None
         elif word in word_index:
-            return word_index[word]
+            word_num = word_index[word]
+            if word_num < vocab:
+                return word_num
+            else:
+                return 2
         else:
             return 2
 
     words = map(translate, words)
-    words = filter(lambda x: x is not None, words)
+    words = filter(lambda x: (x is not None), words)
     return list(words)
 
 

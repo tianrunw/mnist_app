@@ -81,9 +81,16 @@ class imdb_sentiment (object):
     def predict (self, text):
         assert(self.model is not None)
         assert(type(text) is str)
-        codes = encode_review(text)
+        codes = encode_review(text, self.vocab_size)
         pred = self.model.predict(np.array([codes])).round(4)
         return pred[0][0]
+
+
+    def predict_file (self, path):
+        with open(path, 'r') as f:
+            text = f.read()
+
+        return self.predict(text)
 
 
     def save_model (self):
