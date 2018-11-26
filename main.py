@@ -1,4 +1,5 @@
-from flask import Flask, jsonify, abort, make_response, request
+from flask import Flask, jsonify, request
+from database import create_keyspace, query_all, insert_row
 
 import numpy as np
 import tensorflow as tf
@@ -18,14 +19,31 @@ with G.as_default():
     MNIST.load_model()
     FASHION.load_model()
 
+# services
 app = Flask(__name__)
+counter = 1
 
+
+
+def register_row (model, result, label):
+    global counter
+    row = {'post_id':counter, 'model':model, 'result':result, 'label':label}
+    insert_row(row)
+    counter0 = counter
+    counter += 1
+    return counter0
 
 
 @app.route('/', methods=['GET'])
 def get_services ():
-    services = ['mnist', 'fashion', 'imdb']
+    services = ['/mnist', '/fashion', '/imdb', '/database']
     return jsonify({'services': services, 'author':'Tianrun Wang'})
+
+
+@app.route('/database', methods=['GET'])
+def get_database ():
+    rows = query_all()
+    return jsonify(rows)
 
 
 @app.route('/imdb', methods=['POST'])
@@ -51,7 +69,9 @@ def process_imdb ():
     else:
         sentiment = 'NA'
 
-    return jsonify({'numeric':str(result), 'sentiment':sentiment})
+    pid = register_row('imdb', result, sentiment)
+    return jsonify({'numeric':str(result), 'sentiment':sentiment, 
+                    'id':str(pid)})
 
 
 @app.route('/mnist', methods=['POST'])
@@ -69,11 +89,13 @@ def process_mnist ():
         try:
             index = MNIST.predict_index(image)
             label = MNIST.labels[index]
+            pid = register_row('mnist', index, label)
         except:
             index = 'NA'
             label = 'NA'
+            pid = 'NA'
 
-    return jsonify({'index':str(index), 'label':label})
+    return jsonify({'index':str(index), 'label':label, 'id':str(pid)})
 
 
 @app.route('/fashion', methods=['POST'])
@@ -91,15 +113,19 @@ def process_fashion ():
         try:
             index = FASHION.predict_index(image)
             label = FASHION.labels[index]
+            pid = register_row('fashion', index, label)
         except:
             index = 'NA'
             label = 'NA'
+            pid = 'NA'
 
-    return jsonify({'index':str(index), 'label':label})
+    return jsonify({'index':str(index), 'label':label, 'id':str(pid)})
 
 
 
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    # docker run -p 9042:9042 cassandra
+    create_keyspace()
+    app.run(host='0.0.0.0', port=80, debug=True)
