@@ -1,7 +1,12 @@
 # mnist_app
 
 The application can be run either directly from source or through a docker 
-image. In the following introduction we will begin with source.
+image. In the following introduction we will begin with source. `mnist_app` 
+uses Python Imaging Library to read image files, so it's a good idea to 
+install it first.
+```
+$ pip install pillow
+```
 
 #### 1. Start Cassandra server through docker container
 ```
