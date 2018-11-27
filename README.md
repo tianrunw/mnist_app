@@ -7,6 +7,7 @@ install it first.
 ```
 $ pip install pillow
 ```
+You can find MNIST and fashion MNIST png images in `mnist_png.tar.gz`
 
 #### 1. Start Cassandra server through docker container
 ```
